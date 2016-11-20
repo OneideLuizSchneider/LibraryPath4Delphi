@@ -1,0 +1,5 @@
+/Win32/Debug/*.exe
+/Win32/Debug/*.dcu
+/__history
+/__recovery
+/Win32
