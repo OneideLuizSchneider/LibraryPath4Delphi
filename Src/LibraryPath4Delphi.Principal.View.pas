@@ -19,13 +19,15 @@ type
     cxTabSheet1: TcxTabSheet;
     Label2: TLabel;
     Label23: TLabel;
-    cxButton1: TcxButton;
+    btnAdd: TcxButton;
     edtDelphiVersion: TComboBox;
     edtDiretorioFramework: TcxButtonEdit;
     dxStatusBar1: TdxStatusBar;
-    procedure cxButton1Click(Sender: TObject);
+    btnRemove: TcxButton;
+    procedure btnAddClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure edtDelphiVersionChange(Sender: TObject);
+    procedure btnRemoveClick(Sender: TObject);
   private
     FPathInstall: TJclBorRADToolInstallations;
     FDelphiVersion: Integer;
@@ -33,6 +35,7 @@ type
 
     procedure FindDirs(ADirRoot: String; bAdicionar: Boolean = True);
     procedure AddLibrarySearchPath;
+    procedure RemoverDiretoriosEPacotesAntigos;
     procedure LoadDV();
   public
     { Public declarations }
@@ -45,9 +48,14 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm3.cxButton1Click(Sender: TObject);
+procedure TForm3.btnAddClick(Sender: TObject);
 begin
   AddLibrarySearchPath;
+end;
+
+procedure TForm3.btnRemoveClick(Sender: TObject);
+begin
+  RemoverDiretoriosEPacotesAntigos;
 end;
 
 procedure TForm3.edtDelphiVersionChange(Sender: TObject);
@@ -166,11 +174,56 @@ begin
     else if FPathInstall.Installations[I].VersionNumberStr = 'd24' then
       edtDelphiVersion.Items.Add('Delphi 10.1 Berlin');
 
-    // -- Evento disparado antes de iniciar a execução do processo.
-    //FPathInstall.Installations[I].DCC32.OnBeforeExecute := BeforeExecute;
+  end;
+end;
 
-    // -- Evento para saidas de mensagens.
-    //FPathInstall.Installations[I].OutputCallback := OutputCallLine;
+procedure TForm3.RemoverDiretoriosEPacotesAntigos;
+var
+  ListaPaths: TStringList;
+  I: Integer;
+begin
+  ListaPaths := TStringList.Create;
+  try
+    ListaPaths.StrictDelimiter := True;
+    ListaPaths.Delimiter := ';';
+    with FPathInstall.Installations[FDelphiVersion] do
+    begin
+      // remover do search path
+      ListaPaths.Clear;
+      ListaPaths.DelimitedText := RawLibrarySearchPath[tPlatform];
+      for I := ListaPaths.Count - 1 downto 0 do
+      begin
+        if Pos('ONEIDE', AnsiUpperCase(ListaPaths[I])) > 0 then
+          ListaPaths.Delete(I);
+      end;
+      RawLibrarySearchPath[tPlatform] := ListaPaths.DelimitedText;
+      // remover do browse path
+      ListaPaths.Clear;
+      ListaPaths.DelimitedText := RawLibraryBrowsingPath[tPlatform];
+      for I := ListaPaths.Count - 1 downto 0 do
+      begin
+        if Pos('ONEIDE', AnsiUpperCase(ListaPaths[I])) > 0 then
+          ListaPaths.Delete(I);
+      end;
+      RawLibraryBrowsingPath[tPlatform] := ListaPaths.DelimitedText;
+      // remover do Debug DCU path
+      ListaPaths.Clear;
+      ListaPaths.DelimitedText := RawDebugDCUPath[tPlatform];
+      for I := ListaPaths.Count - 1 downto 0 do
+      begin
+        if Pos('ONEIDE', AnsiUpperCase(ListaPaths[I])) > 0 then
+          ListaPaths.Delete(I);
+      end;
+      RawDebugDCUPath[tPlatform] := ListaPaths.DelimitedText;
+      // remover pacotes antigos
+      for I := IdePackages.Count - 1 downto 0 do
+      begin
+        if Pos('ONEIDE', AnsiUpperCase(IdePackages.PackageFileNames[I])) > 0 then
+          IdePackages.RemovePackage(IdePackages.PackageFileNames[I]);
+      end;
+    end;
+  finally
+    ListaPaths.Free;
   end;
 end;
 

@@ -3,7 +3,7 @@ object Form3: TForm3
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'LibraryPath4Delphi - APP'
-  ClientHeight = 334
+  ClientHeight = 408
   ClientWidth = 797
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -37,12 +37,12 @@ object Form3: TForm3
     Left = 3
     Top = 50
     Width = 791
-    Height = 239
+    Height = 319
     Align = alTop
     TabOrder = 1
     Properties.ActivePage = cxTabSheet1
     Properties.CustomButtons.Buttons = <>
-    ClientRectBottom = 235
+    ClientRectBottom = 315
     ClientRectLeft = 4
     ClientRectRight = 787
     ClientRectTop = 24
@@ -77,14 +77,14 @@ object Form3: TForm3
         Font.Style = []
         ParentFont = False
       end
-      object cxButton1: TcxButton
-        Left = 33
+      object btnAdd: TcxButton
+        Left = 480
         Top = 96
-        Width = 732
+        Width = 285
         Height = 57
         Caption = 'Add Library PATH Delphi'
         TabOrder = 0
-        OnClick = cxButton1Click
+        OnClick = btnAddClick
       end
       object edtDelphiVersion: TComboBox
         Left = 593
@@ -113,11 +113,20 @@ object Form3: TForm3
         Text = 'C:\Users\DELPHIBERLIN\Desktop\Componentes\Teste\'
         Width = 536
       end
+      object btnRemove: TcxButton
+        Left = 480
+        Top = 176
+        Width = 285
+        Height = 57
+        Caption = 'Remove Library PATH Delphi'
+        TabOrder = 3
+        OnClick = btnRemoveClick
+      end
     end
   end
   object dxStatusBar1: TdxStatusBar
     Left = 0
-    Top = 314
+    Top = 388
     Width = 797
     Height = 20
     Panels = <
@@ -138,6 +147,5 @@ object Form3: TForm3
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ExplicitTop = 458
   end
 end
