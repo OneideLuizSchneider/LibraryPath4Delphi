@@ -10,7 +10,7 @@ uses
   dxSkinOffice2010Blue, dxSkinSeven, Vcl.StdCtrls, cxButtons, Vcl.Buttons,
   Vcl.ExtCtrls, cxControls, dxSkinscxPCPainter, dxBarBuiltInMenu, cxContainer,
   cxEdit, cxCalendar, cxTextEdit, cxMaskEdit, cxButtonEdit, cxPC,
-  dxSkinsdxStatusBarPainter, dxStatusBar;
+  dxSkinsdxStatusBarPainter, dxStatusBar, cxMemo;
 
 type
   TForm3 = class(TForm)
@@ -24,6 +24,10 @@ type
     edtDiretorioFramework: TcxButtonEdit;
     dxStatusBar1: TdxStatusBar;
     btnRemove: TcxButton;
+    memoListProibidos: TcxMemo;
+    lbl1: TLabel;
+    edtPastaPrincipal: TcxTextEdit;
+    lbl2: TLabel;
     procedure btnAddClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure edtDelphiVersionChange(Sender: TObject);
@@ -33,7 +37,7 @@ type
     FDelphiVersion: Integer;
     tPlatform: TJclBDSPlatform;
 
-    procedure FindDirs(ADirRoot: String; bAdicionar: Boolean = True);
+    procedure FindDirs(pDirRoot: String; bAdicionar: Boolean = True);
     procedure AddLibrarySearchPath;
     procedure RemoverDiretoriosEPacotesAntigos;
     procedure LoadDV();
@@ -45,6 +49,9 @@ var
   Form3: TForm3;
 
 implementation
+
+uses
+  LibraryPath4D.Util;
 
 {$R *.dfm}
 
@@ -69,52 +76,35 @@ begin
   FindDirs(IncludeTrailingPathDelimiter(edtDiretorioFramework.Text));
 end;
 
-procedure TForm3.FindDirs(ADirRoot: String; bAdicionar: Boolean = True);
+procedure TForm3.FindDirs(pDirRoot: String; bAdicionar: Boolean = True);
 var
-  oDirList: TSearchRec;
-
-  function EProibido(const ADir: String): Boolean;
-  const
-    LISTA_PROIBIDOS: ARRAY [0 .. 4] OF STRING = ('quick', 'rave', 'laz',
-      'VerificarNecessidade', '__history');
-  var
-    Str: String;
-  begin
-    Result := False;
-    for Str in LISTA_PROIBIDOS do
-    begin
-      Result := Pos(AnsiUpperCase(Str), AnsiUpperCase(ADir)) > 0;
-      if Result then
-        Break;
-    end;
-  end;
-
+  vDirList: TSearchRec;
 begin
-  ADirRoot := IncludeTrailingPathDelimiter(ADirRoot);
+  pDirRoot := IncludeTrailingPathDelimiter(pDirRoot);
 
-  if FindFirst(ADirRoot + '*.*', faDirectory, oDirList) = 0 then
+  if FindFirst(pDirRoot + '*.*', faDirectory, vDirList) = 0 then
   begin
     try
       repeat
-        if ((oDirList.Attr and faDirectory) <> 0) and (oDirList.Name <> '.') and
-          (oDirList.Name <> '..') and (not EProibido(oDirList.Name)) then
+        if ((vDirList.Attr and faDirectory) <> 0) and (vDirList.Name <> '.') and
+          (vDirList.Name <> '..') and (not TPath4DUtil.EhPermitido(memoListProibidos.Lines.Text, vDirList.Name)) then
         begin
           with FPathInstall.Installations[FDelphiVersion] do
           begin
             if bAdicionar then
             begin
-              AddToLibrarySearchPath(ADirRoot + oDirList.Name, tPlatform);
-              AddToLibraryBrowsingPath(ADirRoot + oDirList.Name, tPlatform);
+              AddToLibrarySearchPath(pDirRoot + vDirList.Name, tPlatform);
+              AddToLibraryBrowsingPath(pDirRoot + vDirList.Name, tPlatform);
             end
             else
-              RemoveFromLibrarySearchPath(ADirRoot + oDirList.Name, tPlatform);
+              RemoveFromLibrarySearchPath(pDirRoot + vDirList.Name, tPlatform);
           end;
           // -- Procura subpastas
-          FindDirs(ADirRoot + oDirList.Name, bAdicionar);
+          FindDirs(pDirRoot + vDirList.Name, bAdicionar);
         end;
-      until FindNext(oDirList) <> 0;
+      until FindNext(vDirList) <> 0;
     finally
-      FindClose(oDirList)
+      FindClose(vDirList)
     end;
   end;
 end;
@@ -179,51 +169,53 @@ end;
 
 procedure TForm3.RemoverDiretoriosEPacotesAntigos;
 var
-  ListaPaths: TStringList;
+  vListaPaths: TStringList;
   I: Integer;
+  vNomePasta:string;
 begin
-  ListaPaths := TStringList.Create;
+  vNomePasta := Trim(edtPastaPrincipal.Text);
+  vListaPaths := TStringList.Create;
   try
-    ListaPaths.StrictDelimiter := True;
-    ListaPaths.Delimiter := ';';
+    vListaPaths.StrictDelimiter := True;
+    vListaPaths.Delimiter := ';';
     with FPathInstall.Installations[FDelphiVersion] do
     begin
       // remover do search path
-      ListaPaths.Clear;
-      ListaPaths.DelimitedText := RawLibrarySearchPath[tPlatform];
-      for I := ListaPaths.Count - 1 downto 0 do
+      vListaPaths.Clear;
+      vListaPaths.DelimitedText := RawLibrarySearchPath[tPlatform];
+      for I := vListaPaths.Count - 1 downto 0 do
       begin
-        if Pos('ONEIDE', AnsiUpperCase(ListaPaths[I])) > 0 then
-          ListaPaths.Delete(I);
+        if Pos(vNomePasta, AnsiUpperCase(vListaPaths[I])) > 0 then
+          vListaPaths.Delete(I);
       end;
-      RawLibrarySearchPath[tPlatform] := ListaPaths.DelimitedText;
+      RawLibrarySearchPath[tPlatform] := vListaPaths.DelimitedText;
       // remover do browse path
-      ListaPaths.Clear;
-      ListaPaths.DelimitedText := RawLibraryBrowsingPath[tPlatform];
-      for I := ListaPaths.Count - 1 downto 0 do
+      vListaPaths.Clear;
+      vListaPaths.DelimitedText := RawLibraryBrowsingPath[tPlatform];
+      for I := vListaPaths.Count - 1 downto 0 do
       begin
-        if Pos('ONEIDE', AnsiUpperCase(ListaPaths[I])) > 0 then
-          ListaPaths.Delete(I);
+        if Pos(vNomePasta, AnsiUpperCase(vListaPaths[I])) > 0 then
+          vListaPaths.Delete(I);
       end;
-      RawLibraryBrowsingPath[tPlatform] := ListaPaths.DelimitedText;
+      RawLibraryBrowsingPath[tPlatform] := vListaPaths.DelimitedText;
       // remover do Debug DCU path
-      ListaPaths.Clear;
-      ListaPaths.DelimitedText := RawDebugDCUPath[tPlatform];
-      for I := ListaPaths.Count - 1 downto 0 do
+      vListaPaths.Clear;
+      vListaPaths.DelimitedText := RawDebugDCUPath[tPlatform];
+      for I := vListaPaths.Count - 1 downto 0 do
       begin
-        if Pos('ONEIDE', AnsiUpperCase(ListaPaths[I])) > 0 then
-          ListaPaths.Delete(I);
+        if Pos(vNomePasta, AnsiUpperCase(vListaPaths[I])) > 0 then
+          vListaPaths.Delete(I);
       end;
-      RawDebugDCUPath[tPlatform] := ListaPaths.DelimitedText;
+      RawDebugDCUPath[tPlatform] := vListaPaths.DelimitedText;
       // remover pacotes antigos
       for I := IdePackages.Count - 1 downto 0 do
       begin
-        if Pos('ONEIDE', AnsiUpperCase(IdePackages.PackageFileNames[I])) > 0 then
+        if Pos(vNomePasta, AnsiUpperCase(IdePackages.PackageFileNames[I])) > 0 then
           IdePackages.RemovePackage(IdePackages.PackageFileNames[I]);
       end;
     end;
   finally
-    ListaPaths.Free;
+    vListaPaths.Free;
   end;
 end;
 

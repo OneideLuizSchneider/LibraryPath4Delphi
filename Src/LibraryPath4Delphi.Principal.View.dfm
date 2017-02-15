@@ -23,7 +23,7 @@ object Form3: TForm3
     Width = 791
     Height = 41
     Align = alTop
-    Caption = 'LibraryPath4Delphi - APP'
+    Caption = 'LibraryPath4D - APP'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
@@ -49,9 +49,11 @@ object Form3: TForm3
     object cxTabSheet1: TcxTabSheet
       Caption = 'Config.'
       ImageIndex = 0
+      ExplicitLeft = 5
+      ExplicitTop = 25
       object Label2: TLabel
-        Left = 33
-        Top = 29
+        Left = 17
+        Top = 7
         Width = 321
         Height = 13
         Caption = 
@@ -66,7 +68,7 @@ object Form3: TForm3
       end
       object Label23: TLabel
         Left = 593
-        Top = 29
+        Top = 7
         Width = 67
         Height = 13
         Caption = 'Delphi Version'
@@ -77,18 +79,33 @@ object Form3: TForm3
         Font.Style = []
         ParentFont = False
       end
-      object btnAdd: TcxButton
+      object lbl1: TLabel
+        Left = 17
+        Top = 61
+        Width = 208
+        Height = 13
+        Caption = 'Lista de Pastas a Ignorar separado por '#39#39' ; '#39#39
+      end
+      object lbl2: TLabel
         Left = 480
-        Top = 96
+        Top = 61
+        Width = 194
+        Height = 13
+        Caption = 'Pasta base para REMOVER subdiretorios'
+      end
+      object btnAdd: TcxButton
+        Left = 33
+        Top = 200
         Width = 285
         Height = 57
         Caption = 'Add Library PATH Delphi'
+        LookAndFeel.NativeStyle = False
         TabOrder = 0
         OnClick = btnAddClick
       end
       object edtDelphiVersion: TComboBox
         Left = 593
-        Top = 48
+        Top = 26
         Width = 172
         Height = 21
         Style = csDropDownList
@@ -102,25 +119,42 @@ object Form3: TForm3
         OnChange = edtDelphiVersionChange
       end
       object edtDiretorioFramework: TcxButtonEdit
-        Left = 33
-        Top = 48
+        Left = 17
+        Top = 26
         Properties.Buttons = <
           item
             Default = True
             Kind = bkEllipsis
           end>
         TabOrder = 2
-        Text = 'C:\Users\DELPHIBERLIN\Desktop\Componentes\Teste\'
+        Text = 'C:\Users\DELPHIBERLIN\Desktop\Componentes\NAME_FRAMEWORK\'
         Width = 536
       end
       object btnRemove: TcxButton
         Left = 480
-        Top = 176
+        Top = 200
         Width = 285
         Height = 57
         Caption = 'Remove Library PATH Delphi'
+        LookAndFeel.NativeStyle = False
         TabOrder = 3
         OnClick = btnRemoveClick
+      end
+      object memoListProibidos: TcxMemo
+        Left = 17
+        Top = 80
+        Lines.Strings = (
+          '__history;_history;.svn;.git;__recovery;DCU')
+        TabOrder = 4
+        Height = 89
+        Width = 301
+      end
+      object edtPastaPrincipal: TcxTextEdit
+        Left = 480
+        Top = 80
+        TabOrder = 5
+        Text = 'NAME_FRAMEWORK'
+        Width = 285
       end
     end
   end

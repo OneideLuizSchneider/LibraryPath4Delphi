@@ -4,7 +4,8 @@ uses
   Vcl.Forms,
   LibraryPath4Delphi.Principal.View in 'Src\LibraryPath4Delphi.Principal.View.pas' {Form3},
   Vcl.Themes,
-  Vcl.Styles;
+  Vcl.Styles,
+  LibraryPath4D.Util in 'Src\LibraryPath4D.Util.pas';
 
 {$R *.res}
 
