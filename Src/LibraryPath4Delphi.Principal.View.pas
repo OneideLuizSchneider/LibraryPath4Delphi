@@ -87,7 +87,7 @@ begin
     try
       repeat
         if ((vDirList.Attr and faDirectory) <> 0) and (vDirList.Name <> '.') and
-          (vDirList.Name <> '..') and (not TPath4DUtil.EhPermitido(memoListProibidos.Lines.Text, vDirList.Name)) then
+          (vDirList.Name <> '..') and (not TPath4DUtil.EhProibido(memoListProibidos.Lines.Text, vDirList.Name)) then
         begin
           with FPathInstall.Installations[FDelphiVersion] do
           begin

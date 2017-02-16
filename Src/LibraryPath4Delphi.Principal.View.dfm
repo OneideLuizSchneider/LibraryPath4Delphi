@@ -49,8 +49,6 @@ object Form3: TForm3
     object cxTabSheet1: TcxTabSheet
       Caption = 'Config.'
       ImageIndex = 0
-      ExplicitLeft = 5
-      ExplicitTop = 25
       object Label2: TLabel
         Left = 17
         Top = 7
