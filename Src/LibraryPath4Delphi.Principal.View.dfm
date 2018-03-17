@@ -1,4 +1,4 @@
-object Form3: TForm3
+object LibraryPath4DView: TLibraryPath4DView
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]

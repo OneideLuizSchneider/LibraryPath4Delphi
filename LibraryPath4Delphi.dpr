@@ -2,7 +2,7 @@ program LibraryPath4Delphi;
 
 uses
   Vcl.Forms,
-  LibraryPath4Delphi.Principal.View in 'Src\LibraryPath4Delphi.Principal.View.pas' {Form3},
+  LibraryPath4Delphi.Principal.View in 'Src\LibraryPath4Delphi.Principal.View.pas' {LibraryPath4DView},
   Vcl.Themes,
   Vcl.Styles,
   LibraryPath4D.Util in 'Src\LibraryPath4D.Util.pas';
@@ -13,6 +13,6 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   TStyleManager.TrySetStyle('Light');
-  Application.CreateForm(TForm3, Form3);
+  Application.CreateForm(TLibraryPath4DView, LibraryPath4DView);
   Application.Run;
 end.

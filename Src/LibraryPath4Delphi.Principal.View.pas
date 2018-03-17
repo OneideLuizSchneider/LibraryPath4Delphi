@@ -13,7 +13,7 @@ uses
   dxSkinsdxStatusBarPainter, dxStatusBar, cxMemo;
 
 type
-  TForm3 = class(TForm)
+  TLibraryPath4DView = class(TForm)
     Panel1: TPanel;
     cxPageControl1: TcxPageControl;
     cxTabSheet1: TcxTabSheet;
@@ -39,14 +39,14 @@ type
 
     procedure FindDirs(pDirRoot: String; bAdicionar: Boolean = True);
     procedure AddLibrarySearchPath;
-    procedure RemoverDiretoriosEPacotesAntigos;
+    procedure RemoveDirectoriesAndOldPackages;
     procedure LoadDV();
   public
     { Public declarations }
   end;
 
 var
-  Form3: TForm3;
+  LibraryPath4DView: TLibraryPath4DView;
 
 implementation
 
@@ -55,28 +55,28 @@ uses
 
 {$R *.dfm}
 
-procedure TForm3.btnAddClick(Sender: TObject);
+procedure TLibraryPath4DView.btnAddClick(Sender: TObject);
 begin
   AddLibrarySearchPath;
 end;
 
-procedure TForm3.btnRemoveClick(Sender: TObject);
+procedure TLibraryPath4DView.btnRemoveClick(Sender: TObject);
 begin
-  RemoverDiretoriosEPacotesAntigos;
+  RemoveDirectoriesAndOldPackages;
 end;
 
-procedure TForm3.edtDelphiVersionChange(Sender: TObject);
+procedure TLibraryPath4DView.edtDelphiVersionChange(Sender: TObject);
 begin
   FDelphiVersion := edtDelphiVersion.ItemIndex;
 end;
 
 // adicionar o paths ao library path do delphi
-procedure TForm3.AddLibrarySearchPath;
+procedure TLibraryPath4DView.AddLibrarySearchPath;
 begin
   FindDirs(IncludeTrailingPathDelimiter(edtDiretorioFramework.Text));
 end;
 
-procedure TForm3.FindDirs(pDirRoot: String; bAdicionar: Boolean = True);
+procedure TLibraryPath4DView.FindDirs(pDirRoot: String; bAdicionar: Boolean = True);
 var
   vDirList: TSearchRec;
 begin
@@ -109,12 +109,12 @@ begin
   end;
 end;
 
-procedure TForm3.FormCreate(Sender: TObject);
+procedure TLibraryPath4DView.FormCreate(Sender: TObject);
 begin
   LoadDV;
 end;
 
-procedure TForm3.LoadDV;
+procedure TLibraryPath4DView.LoadDV;
 var
   I: Integer;
 begin
@@ -162,60 +162,61 @@ begin
     else if FPathInstall.Installations[I].VersionNumberStr = 'd23' then
       edtDelphiVersion.Items.Add('Delphi 10 Seattle')
     else if FPathInstall.Installations[I].VersionNumberStr = 'd24' then
-      edtDelphiVersion.Items.Add('Delphi 10.1 Berlin');
-
+      edtDelphiVersion.Items.Add('Delphi 10.1 Berlin')
+    else if FPathInstall.Installations[I].VersionNumberStr = 'd25' then
+      edtDelphiVersion.Items.Add('Delphi 10.2 Tokyo');
   end;
 end;
 
-procedure TForm3.RemoverDiretoriosEPacotesAntigos;
+procedure TLibraryPath4DView.RemoveDirectoriesAndOldPackages;
 var
-  vListaPaths: TStringList;
+  vListPaths: TStringList;
   I: Integer;
-  vNomePasta:string;
+  vFolderName:string;
 begin
-  vNomePasta := Trim(edtPastaPrincipal.Text);
-  vListaPaths := TStringList.Create;
+  vFolderName := Trim(edtPastaPrincipal.Text);
+  vListPaths := TStringList.Create;
   try
-    vListaPaths.StrictDelimiter := True;
-    vListaPaths.Delimiter := ';';
+    vListPaths.StrictDelimiter := True;
+    vListPaths.Delimiter := ';';
     with FPathInstall.Installations[FDelphiVersion] do
     begin
       // remover do search path
-      vListaPaths.Clear;
-      vListaPaths.DelimitedText := RawLibrarySearchPath[tPlatform];
-      for I := vListaPaths.Count - 1 downto 0 do
+      vListPaths.Clear;
+      vListPaths.DelimitedText := RawLibrarySearchPath[tPlatform];
+      for I := vListPaths.Count - 1 downto 0 do
       begin
-        if Pos(vNomePasta, AnsiUpperCase(vListaPaths[I])) > 0 then
-          vListaPaths.Delete(I);
+        if Pos(AnsiUpperCase(vFolderName), AnsiUpperCase(vListPaths[I])) > 0 then
+          vListPaths.Delete(I);
       end;
-      RawLibrarySearchPath[tPlatform] := vListaPaths.DelimitedText;
+      RawLibrarySearchPath[tPlatform] := vListPaths.DelimitedText;
       // remover do browse path
-      vListaPaths.Clear;
-      vListaPaths.DelimitedText := RawLibraryBrowsingPath[tPlatform];
-      for I := vListaPaths.Count - 1 downto 0 do
+      vListPaths.Clear;
+      vListPaths.DelimitedText := RawLibraryBrowsingPath[tPlatform];
+      for I := vListPaths.Count - 1 downto 0 do
       begin
-        if Pos(vNomePasta, AnsiUpperCase(vListaPaths[I])) > 0 then
-          vListaPaths.Delete(I);
+        if Pos(vFolderName, AnsiUpperCase(vListPaths[I])) > 0 then
+          vListPaths.Delete(I);
       end;
-      RawLibraryBrowsingPath[tPlatform] := vListaPaths.DelimitedText;
+      RawLibraryBrowsingPath[tPlatform] := vListPaths.DelimitedText;
       // remover do Debug DCU path
-      vListaPaths.Clear;
-      vListaPaths.DelimitedText := RawDebugDCUPath[tPlatform];
-      for I := vListaPaths.Count - 1 downto 0 do
+      vListPaths.Clear;
+      vListPaths.DelimitedText := RawDebugDCUPath[tPlatform];
+      for I := vListPaths.Count - 1 downto 0 do
       begin
-        if Pos(vNomePasta, AnsiUpperCase(vListaPaths[I])) > 0 then
-          vListaPaths.Delete(I);
+        if Pos(vFolderName, AnsiUpperCase(vListPaths[I])) > 0 then
+          vListPaths.Delete(I);
       end;
-      RawDebugDCUPath[tPlatform] := vListaPaths.DelimitedText;
+      RawDebugDCUPath[tPlatform] := vListPaths.DelimitedText;
       // remover pacotes antigos
       for I := IdePackages.Count - 1 downto 0 do
       begin
-        if Pos(vNomePasta, AnsiUpperCase(IdePackages.PackageFileNames[I])) > 0 then
+        if Pos(vFolderName, AnsiUpperCase(IdePackages.PackageFileNames[I])) > 0 then
           IdePackages.RemovePackage(IdePackages.PackageFileNames[I]);
       end;
     end;
   finally
-    vListaPaths.Free;
+    vListPaths.Free;
   end;
 end;
 
