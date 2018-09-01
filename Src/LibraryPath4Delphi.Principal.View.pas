@@ -58,6 +58,7 @@ uses
 procedure TLibraryPath4DView.btnAddClick(Sender: TObject);
 begin
   AddLibrarySearchPath;
+  ShowMessage('Processo finalizado!!!');
 end;
 
 procedure TLibraryPath4DView.btnRemoveClick(Sender: TObject);

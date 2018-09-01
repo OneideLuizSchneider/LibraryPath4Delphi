@@ -142,7 +142,7 @@ object LibraryPath4DView: TLibraryPath4DView
         Left = 17
         Top = 80
         Lines.Strings = (
-          '__history;_history;.svn;.git;__recovery;DCU')
+          '__history;_history;.svn;.git;__recovery;DCU;Win32;Win64')
         TabOrder = 4
         Height = 89
         Width = 301
