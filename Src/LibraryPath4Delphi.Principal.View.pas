@@ -165,7 +165,9 @@ begin
     else if FPathInstall.Installations[I].VersionNumberStr = 'd24' then
       edtDelphiVersion.Items.Add('Delphi 10.1 Berlin')
     else if FPathInstall.Installations[I].VersionNumberStr = 'd25' then
-      edtDelphiVersion.Items.Add('Delphi 10.2 Tokyo');
+      edtDelphiVersion.Items.Add('Delphi 10.2 Tokyo')
+    else if FPathInstall.Installations[I].VersionNumberStr = 'd26' then
+      edtDelphiVersion.Items.Add('Delphi 10.3 Rio');
   end;
 end;
 
